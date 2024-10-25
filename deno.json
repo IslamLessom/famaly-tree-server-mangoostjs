@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-read --allow-sys --allow-env --allow-net main.ts"
+  },
+  "imports": {
+    "mongoose": "npm:mongoose",
+    "bodyParser": "npm:body-parser",
+    "express": "npm:express"
+  }
+}
