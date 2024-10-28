@@ -50,3 +50,24 @@ export const getUserById = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching user", error });
   }
 };
+
+export const updateUser = async (userId: string, updateData: any) => {
+  try {
+    const updatedUser = await FamilyMember.findByIdAndUpdate(
+      userId,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+
+    return updatedUser;
+  } catch (error: any) {
+    throw new Error(`Error updating user: ${error.message}`);
+  }
+};

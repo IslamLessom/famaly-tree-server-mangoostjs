@@ -5,6 +5,8 @@
   "imports": {
     "mongoose": "npm:mongoose",
     "bodyParser": "npm:body-parser",
-    "express": "npm:express"
+    "express": "npm:express",
+    "cors": "npm:cors"
+    
   }
 }

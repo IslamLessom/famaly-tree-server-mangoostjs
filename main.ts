@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import express from "express";
 import bodyParser from "bodyParser";
 import router from "./routes.ts"; // Importing router
+import cors from "cors";
 
 const uri =
   "mongodb+srv://islam:WcHlVCrEiTUb5ERx@family-tree.vs4jz.mongodb.net/family-three?retryWrites=true&w=majority";
@@ -15,6 +16,8 @@ try {
 }
 
 const app = express();
+app.use(cors());
+
 const PORT = 8000;
 
 app.use(bodyParser.json());
