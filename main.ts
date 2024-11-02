@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import express from "express";
 import bodyParser from "bodyParser";
-import router from "./routes.ts"; // Importing router
 import cors from "cors";
+import familyMemberRouter from "./controllers/FamilyMemberController.ts";
+import pairRouter from "./controllers/PairController.ts";
 
 const uri =
   "mongodb+srv://islam:WcHlVCrEiTUb5ERx@family-tree.vs4jz.mongodb.net/family-three?retryWrites=true&w=majority";
@@ -21,7 +22,8 @@ app.use(cors());
 const PORT = 8000;
 
 app.use(bodyParser.json());
-app.use(router);
+app.use("/tree", familyMemberRouter);
+app.use("/pair", pairRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
