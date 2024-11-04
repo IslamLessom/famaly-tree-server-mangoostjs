@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Request, Response } from "express";
 import { createFamilyMember } from "../data/familyMember/Repository.ts";
 import { createPair } from "../data/pair/Repository.ts";
-import { updateUser } from "../data/familyMember/Repository.ts";
+import { updateUser, transferSpouse } from "../data/familyMember/Repository.ts"; // Импортируем transferSpouse
 import FamilyMemberModel from "../data/familyMember/Model.ts";
 
 const familyMemberRouter = new Router();
@@ -35,11 +35,29 @@ familyMemberRouter.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// Edit an existing user and optionally update a spouse
+// Update an existing user or transfer a spouse
 familyMemberRouter.put("/:id", async (req: Request, res: Response) => {
+  console.log("Received data:", req.body); // Логируем входящие данные
   try {
-    const { id } = req.params; // Получаем ID пользователя из параметров URL
-    const { name, birthday, father, mother, spouseId, isDivorced } = req.body;
+    const { id } = req.params;
+    const {
+      name,
+      birthday,
+      father,
+      mother,
+      spouseId,
+      isDivorced,
+      currentSpouseId,
+      newSpouseId,
+    } = req.body;
+
+    // Проверяем наличие ID
+    console.log("Updating member with ID:", id);
+
+    // Если указаны currentSpouseId и newSpouseId, переносим супруга
+    if (currentSpouseId && newSpouseId) {
+      await transferSpouse(currentSpouseId, newSpouseId);
+    }
 
     // Обновляем данные члена семьи
     const updatedMember = await updateUser(id, {
@@ -47,12 +65,17 @@ familyMemberRouter.put("/:id", async (req: Request, res: Response) => {
       birthday,
       father,
       mother,
-      spouseId, // Добавляем обновление супруга
-      isDivorced, // Добавляем статус развода
+      spouseId,
+      isDivorced,
     });
+
+    if (!updatedMember) {
+      return res.status(404).json({ message: "Member not found" });
+    }
 
     res.status(200).json({ member: updatedMember });
   } catch (error) {
+    console.error("Error updating family member:", error);
     res.status(400).json({ message: "Error updating family member", error });
   }
 });
