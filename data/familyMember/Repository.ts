@@ -1,5 +1,5 @@
 import { Request, Response } from "express"; // Using Express for request and response types
-import FamilyMemberModel from "../familyMember/Model.ts";
+import FamilyMemberModel from "./Model.ts";
 import PairModel from "../pair/Model.ts";
 
 export const createFamilyMember = async (data: {
