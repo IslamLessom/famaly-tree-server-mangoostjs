@@ -12,20 +12,22 @@ class UserRepository {
   }
 
   // Получение пользователя по userId
-  async getUserById(userId: any) {
+  async getUserById(userId: string) {
+    // Убедитесь, что тип соответствует
     try {
-      return await UserModel.findOne({ userId });
+      // Если userId - это ObjectId, используйте его напрямую
+      return await UserModel.findById(userId); // Если вы используете _id
     } catch (error: any) {
       throw new Error("Ошибка при получении пользователя: " + error.message);
     }
   }
 
   // Обновление информации о пользователе
-  async updateUser(userId: any, updatedData: any) {
+  async updateUser(userId: string, updatedData: any) {
     try {
-      return await UserModel.findOneAndUpdate({ userId }, updatedData, {
+      return await UserModel.findByIdAndUpdate(userId, updatedData, {
         new: true,
-      });
+      }); // Если вы используете _id
     } catch (error: any) {
       throw new Error("Ошибка при обновлении пользователя: " + error.message);
     }

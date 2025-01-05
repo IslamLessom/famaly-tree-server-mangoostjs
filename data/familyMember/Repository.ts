@@ -1,14 +1,14 @@
-import { Request, Response } from "express"; // Using Express for request and response types
 import FamilyMemberModel from "./Model.ts";
 import PairModel from "../pair/Model.ts";
 
 export const createFamilyMember = async (data: {
   name: string;
   birthday: string;
+  dateOfDeath?: string;
   father?: string;
   mother?: string;
   spouseId?: string;
-  isDivorced?: boolean;
+  photoUrl?: null | undefined | string; // Добавлено поле для URL фотографии
 }) => {
   const newMember = new FamilyMemberModel(data);
   await newMember.save();
@@ -20,14 +20,10 @@ interface FamilyMemberUpdateType {
   mother?: string;
   father?: string;
   birthday?: Date;
-  spouseId?: string | null | undefined;
-  isDivorced?: boolean;
-}
+  dateOfDeath?: Date;
+  isDivorced?: string;
 
-interface SpouseUpdateType {
-  spouse1?: string;
-  spouse2?: string;
-  isDivorced?: boolean;
+  spouseId?: string | null | undefined;
 }
 
 const removeOldSpouseRelationships = async (userId: string) => {
@@ -42,17 +38,13 @@ export const updateUser = async (
 ) => {
   try {
     const existingMember = await FamilyMemberModel.findById(userId);
-    if (updateData.spouseId === "") {
-      updateData.spouseId = null; // Set to null if empty string
-    }
+
     if (!existingMember) {
-      throw new Error("User not found");
+      throw new Error("Пользователь не найден");
     }
 
-    // Удаляем старые связи перед обновлением
     await removeOldSpouseRelationships(userId);
 
-    // Обновляем данные пользователя
     const updatedMember = await FamilyMemberModel.findByIdAndUpdate(
       userId,
       updateData,
@@ -60,32 +52,13 @@ export const updateUser = async (
     );
 
     if (!updatedMember) {
-      throw new Error("Failed to update user");
+      throw new Error("Не удалось обновить пользователя");
     }
 
-    let updatedSpouse = null;
-
-    // Проверяем наличие spouseId для обновления или создания записи о супруге
-    if (updateData.spouseId) {
-      console.log(
-        "Creating new spouse relationship with ID:",
-        updateData.spouseId
-      );
-
-      // Создаем новую связь между текущим пользователем и новым супругом
-      updatedSpouse = await PairModel.create({
-        spouse1: userId,
-        spouse2: updateData.spouseId,
-        isDivorced: updateData.isDivorced || false,
-      });
-
-      console.log("Created new spouse relationship:", updatedSpouse);
-    }
-
-    return { updatedMember, updatedSpouse };
+    return updatedMember; // Возвращаем обновленного члена семьи
   } catch (error: any) {
-    console.error("Error updating user:", error);
-    throw new Error(`Error updating user: ${error.message}`);
+    console.error("Ошибка при обновлении пользователя:", error);
+    throw new Error(`Ошибка при обновлении пользователя: ${error.message}`);
   }
 };
 

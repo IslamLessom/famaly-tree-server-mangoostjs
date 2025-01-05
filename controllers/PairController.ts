@@ -1,5 +1,4 @@
-import { Router } from "express";
-import { Request, Response } from "express";
+import { Router, Request, Response } from "express";
 import { createPair, deletePair } from "../data/pair/Repository.ts";
 import PairModel from "../data/pair/Model.ts";
 
@@ -23,7 +22,7 @@ pairRouter.post("/", async (req: Request, res: Response) => {
   }
 });
 
-pairRouter.get("/", async (req: Request, res: Response) => {
+pairRouter.get("/", async (_: Request, res: Response) => {
   try {
     const allSpouse = await PairModel.find(); // Find all users
     res.json(allSpouse);
